@@ -1,0 +1,15 @@
+# many instructions will need sudo permissions
+
+# install python
+# install pip
+# install antlr4 python3 module
+	pip install antlr4-python3-runtime
+# install ANTLR4
+	cd /usr/local/lib
+	curl -O http://www.antlr.org/download/antlr-4.7.2-complete.jar
+
+vv OPTIONAL vv
+# add to ~/.bashrc file
+	export CLASSPATH=".:/usr/local/lib/antlr-4.7.2-complete.jar:$CLASSPATH"
+	alias antlr4='java -jar /usr/local/lib/antlr-4.7.2-complete.jar'
+	alias grun='java org.antlr.v4.gui.TestRig'
