@@ -1,10 +1,10 @@
-This project is to parse though a given source code to detect if certain requirements and restrictions are upheld. The project can parse C++, Go, Java, and Python3. ANTLR4 is used for the parsing modules (thus Java is used). Python3 is used for profiling and analization of the parsed program.
+This project is to parse though a given source code to detect if certain requirements and restrictions are upheld. The project can parse C++, Go, Java, and Python3. ANTLR4 is used for generating the parsing modules.
 
 Each grammar required is in the grammars directory.
-'make grammar' command to compile them in python3.
+The make file should generate and compile the grammars as needed
 The grammar parsing modules only need to be compiled once, unless the .g4 files are changed (which they shouldn't need to be).
 
 The sample code is only for testing the project.
 If new sample code is added, make sure that it compile and run as expected.
 
-The project currently has no progress beyond this set up.
+The project currently parses and prints the parse tree of a source code given as an argument (proof of concept)

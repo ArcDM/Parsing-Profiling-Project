@@ -1,9 +1,5 @@
 # many instructions will need sudo permissions
 
-# install python
-# install pip
-# install antlr4 python3 module
-	pip install antlr4-python3-runtime
 # install ANTLR4
 	cd /usr/local/lib
 	curl -O http://www.antlr.org/download/antlr-4.7.2-complete.jar
