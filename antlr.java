@@ -10,6 +10,9 @@ import JavaParserListener.*;*/
 
 public class antlr
 {
+	final static int STATUS_PASS = 1,
+					STATUS_FAIL = 0;
+
 	private static String getExtension( String inputString )
 	{
 		int lastIndexOf = inputString.lastIndexOf(".");
@@ -20,6 +23,7 @@ public class antlr
 	public static void main( String[] args) throws Exception
 	{
 	    int argument_index = 0;
+	    boolean return_boolean = true;
 
 		switch( args.length )
         {
@@ -37,24 +41,29 @@ public class antlr
 					switch( getExtension( args[ argument_index ] ) )
 					{
 						case "cpp":
-							CPP14Walker.walker( args[ argument_index ] );
+							return_boolean = CPP14Walker.walker( args[ argument_index ] );
 							break;
 						case "go":
-							GolangWalker.walker( args[ argument_index ] );
+							return_boolean = GolangWalker.walker( args[ argument_index ] );
 							break;
 						case "java":
-							JavaWalker.walker( args[ argument_index ] );
+							return_boolean = JavaWalker.walker( args[ argument_index ] );
 							break;
 						case "py":
-							Python3Walker.walker( args[ argument_index ] );
+							return_boolean = Python3Walker.walker( args[ argument_index ] );
 							break;
 						default:
 							System.out.println( "Unknown file extention" );
 							System.exit( -2 ); // returns -2
 					}
+
+					if( !return_boolean )
+					{
+						System.exit( STATUS_FAIL );
+					}
                 }
         }
 
-		System.exit( 0 ); // returns 0
+		System.exit( STATUS_PASS );
 	}
 }
