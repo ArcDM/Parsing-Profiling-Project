@@ -68,7 +68,7 @@ func main() {
 	fmt.Fprintf( os.Stderr, str13 );
 	fmt.Fprintf( os.Stderr, "catch line 13.\n" );
 
-	fmt.Fprintf( os.Stdout, str14, Var );
-	fmt.Fprintf( os.Stdout, "pass line 14 %s.\n", Var );
-	fmt.Fprintf( os.Stdout, "catch line 14 %s.\n", "none" );
+	fmt.Fprintf( os.Stderr, str14, Var );
+	fmt.Fprintf( os.Stderr, "pass line 14 %s.\n", Var );
+	fmt.Fprintf( os.Stderr, "catch line 14 %s.\n", "none" );
 }
