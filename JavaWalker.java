@@ -34,7 +34,10 @@ public class JavaWalker
 
 class JavaListener extends JavaParserBaseListener
 {
-	private short 	PrintVariables = 0;
+	private int 	PrintVariables = 0,
+					expression_list_level = 0,
+					print_level;
+
 	private boolean SYSTEM_flag = false,
 					OUT_flag = false,
 					ERR_flag = false,
@@ -51,7 +54,7 @@ class JavaListener extends JavaParserBaseListener
 				break;
 
 			default: // assumed to be variable
-				PrintVariables += ( std_print_flag || err_print_flag )? 1 : 0;
+				PrintVariables += ( ( std_print_flag || err_print_flag ) && expression_list_level == print_level )? 1 : 0;
 				break;
 		}
 	}
@@ -77,6 +80,8 @@ class JavaListener extends JavaParserBaseListener
 	@Override
 	public void enterMethodCall( JavaParser.MethodCallContext context )
 	{
+		PrintVariables += ( ( std_print_flag || err_print_flag ) && expression_list_level == print_level )? 1 : 0; // if already in print method call
+
 		switch( context.getChild( 0 ).getText() )
 		{
 			case "print":
@@ -84,6 +89,7 @@ class JavaListener extends JavaParserBaseListener
 			case "printf":
 				std_print_flag = OUT_flag;
 				err_print_flag = ERR_flag;
+				print_level = ( OUT_flag || ERR_flag )? arguments_list_level + 1 : 0;
 				OUT_flag = false;
 				ERR_flag = false;
 				break;
@@ -93,7 +99,7 @@ class JavaListener extends JavaParserBaseListener
 	@Override
 	public void exitMethodCall( JavaParser.MethodCallContext context )
 	{
-		if( std_print_flag || err_print_flag )
+		if( ( std_print_flag || err_print_flag ) && expression_list_level == print_level - 1 )
 		{
 			if( PrintVariables != 0 )
 			{ // resolve
@@ -115,11 +121,23 @@ class JavaListener extends JavaParserBaseListener
 	@Override
 	public void enterLiteral( JavaParser.LiteralContext context )
 	{
-		PrintVariables -= ( std_print_flag || err_print_flag )? 1 : 0;
+		PrintVariables -= ( ( std_print_flag || err_print_flag ) && expression_list_level == print_level )? 1 : 0;
 	}
 
 	@Override
 	public void exitLiteral( JavaParser.LiteralContext context )
 	{
+	}
+
+	@Override
+	public void enterExpressionList(JavaParser.ExpressionListContext context )
+	{
+		expression_list_level += 1;
+	}
+
+	@Override
+	public void exitExpressionList(JavaParser.ExpressionListContext context )
+	{
+		expression_list_level -= 1;
 	}
 }

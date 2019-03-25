@@ -31,8 +31,10 @@ public class GolangWalker
 
 class GolangListener extends GolangBaseListener
 {
-	private short 	PrintVariables = 0,
-					FileVariables = 0;
+	private int 	PrintVariables = 0,
+					FileVariables = 0,
+					arguments_list_level = 0,
+					print_level, file_print_level;
 
 	private boolean fmt_flag = false,
 					OS_flag = false,
@@ -55,8 +57,8 @@ class GolangListener extends GolangBaseListener
 				break;
 
 			default: // assumed to be variable
-				PrintVariables += ( std_print_flag || err_print_flag )? 1 : 0;
-				FileVariables += ( file_print_flag )? 1 : 0;
+				PrintVariables += ( ( std_print_flag || err_print_flag ) && arguments_list_level == print_level )? 1 : 0;
+				FileVariables += ( file_print_flag && arguments_list_level == print_level )? 1 : 0;
 				break;
 		}
 	}
@@ -77,37 +79,42 @@ class GolangListener extends GolangBaseListener
 				case "Println":
 				case "Printf":
 					std_print_flag = fmt_flag;
+					print_level = ( fmt_flag )? arguments_list_level + 1 : 0;
 					fmt_flag = false;
 					break;
 				case "Fprint":
 				case "Fprintln":
 				case "Fprintf":
 					file_print_flag = fmt_flag;
+					file_print_level = ( fmt_flag )? arguments_list_level + 1 : 0;
 					fmt_flag = false;
 					break;
 				case "Stdout":
 					Stdout_flag = ( OS_flag && !file_print_flag );
-					std_print_flag = ( OS_flag && file_print_flag );
+					std_print_flag = ( OS_flag && arguments_list_level == print_level && file_print_flag );
 
-					PrintVariables += ( OS_flag && file_print_flag )? FileVariables : 0;
-					FileVariables = ( OS_flag && file_print_flag )? 0 : FileVariables;
+					PrintVariables += ( std_print_flag )? FileVariables : 0;
+					print_level		= ( std_print_flag )? file_print_level : 0;
+					FileVariables	= ( std_print_flag )? 0 : FileVariables;
 
-					file_print_flag = ( OS_flag )? false : file_print_flag;
+					file_print_flag = ( std_print_flag )? false : file_print_flag;
 					OS_flag = false;
 					break;
 				case "Stderr":
 					Stderr_flag = ( OS_flag && !file_print_flag );
-					err_print_flag = ( OS_flag && file_print_flag );
+					err_print_flag = ( OS_flag && arguments_list_level == print_level && file_print_flag );
 
-					PrintVariables += ( OS_flag && file_print_flag )? FileVariables : 0;
-					FileVariables = ( OS_flag && file_print_flag )? 0 : FileVariables;
+					PrintVariables += ( err_print_flag )? FileVariables : 0;
+					print_level		= ( err_print_flag )? file_print_level : 0;
+					FileVariables	= ( err_print_flag )? 0 : FileVariables;
 
-					file_print_flag = ( OS_flag )? false : file_print_flag;
+					file_print_flag = ( err_print_flag )? false : file_print_flag;
 					OS_flag = false;
 					break;
 				case "WriteString":
 					std_print_flag = Stdout_flag;
 					err_print_flag = Stderr_flag;
+					print_level = ( Stdout_flag || Stderr_flag )? arguments_list_level + 1 : 0;
 					Stdout_flag = false;
 					Stderr_flag = false;
 					break;
@@ -118,8 +125,8 @@ class GolangListener extends GolangBaseListener
 					Stdout_flag = false;
 					Stderr_flag = false;
 
-					PrintVariables += ( std_print_flag || err_print_flag )? 1 : 0;
-					FileVariables += ( file_print_flag )? 1 : 0;
+					PrintVariables += ( ( std_print_flag || err_print_flag ) && arguments_list_level == print_level )? 1 : 0;
+					FileVariables += ( file_print_flag && arguments_list_level == print_level )? 1 : 0;
 					break;
 			}
 		}
@@ -133,12 +140,13 @@ class GolangListener extends GolangBaseListener
 	@Override
 	public void enterArguments( GolangParser.ArgumentsContext context )
 	{
+		arguments_list_level += 1;
 	}
 
 	@Override
 	public void exitArguments( GolangParser.ArgumentsContext context )
 	{
-		if( std_print_flag || err_print_flag )
+		if( print_level == arguments_list_level-- && ( std_print_flag || err_print_flag ) )
 		{
 			if( PrintVariables != 0 )
 			{ // resolve

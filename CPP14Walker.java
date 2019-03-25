@@ -32,10 +32,11 @@ public class CPP14Walker
 
 class CPP14Listener extends CPP14BaseListener
 {
-	private short 	ShiftBlockCount = 0,
-					expression_list_count = 0,
+	private int 	ShiftBlockCount = 0,
 					PrintVariables = 0,
-					FileVariables = 0;
+					FileVariables = 0,
+					expression_list_level = 0,
+					print_level, file_print_level;
 
 	private boolean COUT_flag = false,
 					CERR_flag = false,
@@ -52,6 +53,7 @@ class CPP14Listener extends CPP14BaseListener
 			case "cout":
 			case "wcout":
 				COUT_flag = ( ShiftBlockCount > 0 ); // this should always give true
+				print_level = ( COUT_flag )? expression_list_level : 0;
 				break;
 			case "endl":
 				break; // skip
@@ -59,51 +61,76 @@ class CPP14Listener extends CPP14BaseListener
 			case "puts":
 			case "putchar":
 				std_print_flag = true;
+				print_level = expression_list_level + 1;
 				break;
 			case "fprintf":
 			case "fputs":
 			case "putc":
 			case "fputc":
 				file_print_flag = true;
+				file_print_level = expression_list_level + 1;
 				break;
 			case "write":
 				write_stream_flag = true;
+				file_print_level = expression_list_level + 1;
 				break;
 			case "cerr":
 			case "wcerr":
 				CERR_flag = ( ShiftBlockCount > 0 ); // this should always give true
+				print_level = ( CERR_flag )? expression_list_level : 0;
 				break;
 			case "perror":
 				err_print_flag = true;
+				print_level = expression_list_level + 1;
 				break;
 			case "STDOUT_FILENO":
-				std_print_flag = ( write_stream_flag && expression_list_count > 0 );
-				PrintVariables |= ( write_stream_flag && expression_list_count > 0 )? FileVariables : 0;
-				FileVariables = ( write_stream_flag && expression_list_count > 0 )? 0 : FileVariables;
-				write_stream_flag = ( expression_list_count > 0 )? false : write_stream_flag;
+				std_print_flag = ( write_stream_flag && expression_list_level == file_print_level );
+
+				PrintVariables += ( std_print_flag )? FileVariables : 0;
+				FileVariables	= ( std_print_flag )? 0 : FileVariables;
+
+				print_level		= ( std_print_flag )? file_print_level : 0;
+				FileVariables	= ( std_print_flag )? 0 : FileVariables;
+
+				write_stream_flag = ( std_print_flag )? false : write_stream_flag;
 				break;
 			case "STDERR_FILENO":
-				err_print_flag = ( write_stream_flag && expression_list_count > 0 );
-				PrintVariables += ( write_stream_flag && expression_list_count > 0 )? FileVariables : 0;
-				FileVariables = ( write_stream_flag && expression_list_count > 0 )? 0 : FileVariables;
-				write_stream_flag = ( expression_list_count > 0 )? false : write_stream_flag;
+				err_print_flag = ( write_stream_flag && expression_list_level == file_print_level );
+
+				PrintVariables += ( err_print_flag )? FileVariables : 0;
+				FileVariables	= ( err_print_flag )? 0 : FileVariables;
+
+				print_level		= ( err_print_flag )? file_print_level : 0;
+				FileVariables	= ( err_print_flag )? 0 : FileVariables;
+
+				write_stream_flag = ( err_print_flag )? false : write_stream_flag;
 				break;
 			case "stdout":
-				std_print_flag = ( file_print_flag && expression_list_count > 0 );
-				PrintVariables += ( file_print_flag && expression_list_count > 0 )? FileVariables : 0;
-				FileVariables = ( file_print_flag && expression_list_count > 0 )? 0 : FileVariables;
-				file_print_flag = ( expression_list_count > 0 )? false : file_print_flag;
+				std_print_flag = ( file_print_flag && expression_list_level == file_print_level );
+
+				PrintVariables += ( std_print_flag )? FileVariables : 0;
+				FileVariables	= ( std_print_flag )? 0 : FileVariables;
+
+				print_level		= ( std_print_flag )? file_print_level : 0;
+				FileVariables	= ( std_print_flag )? 0 : FileVariables;
+
+				file_print_flag = ( std_print_flag )? false : file_print_flag;
 				break;
 			case "stderr":
-				err_print_flag = ( file_print_flag && expression_list_count > 0 );
-				PrintVariables += ( file_print_flag && expression_list_count > 0 )? FileVariables : 0;
-				FileVariables = ( file_print_flag && expression_list_count > 0 )? 0 : FileVariables;
-				file_print_flag = ( expression_list_count > 0 )? false : file_print_flag;
+				err_print_flag = ( file_print_flag && expression_list_level == file_print_level );
+
+				PrintVariables += ( err_print_flag )? FileVariables : 0;
+				FileVariables	= ( err_print_flag )? 0 : FileVariables;
+
+				print_level		= ( err_print_flag )? file_print_level : 0;
+				FileVariables	= ( err_print_flag )? 0 : FileVariables;
+
+				file_print_flag = ( err_print_flag )? false : file_print_flag;
 				break;
 			default: // assumed to be variable
 				PrintVariables += ( COUT_flag || CERR_flag ||
-					( ( std_print_flag | err_print_flag ) && expression_list_count > 0 ) )? 1 : 0;
-				FileVariables += ( ( write_stream_flag || file_print_flag ) && expression_list_count > 0 )? 1 : 0;
+					( ( std_print_flag | err_print_flag ) && expression_list_level == print_level ) )? 1 : 0;
+				FileVariables += ( ( write_stream_flag || file_print_flag ) && expression_list_level == print_level )? 1 : 0;
 				break;
 		}
 	}
@@ -116,26 +143,24 @@ class CPP14Listener extends CPP14BaseListener
 	@Override
 	public void enterExpressionlist( CPP14Parser.ExpressionlistContext context )
 	{
-		++expression_list_count;
+		++expression_list_level;
 	}
 
 	@Override
 	public void exitExpressionlist( CPP14Parser.ExpressionlistContext context )
 	{
-		--expression_list_count;
-
-		if( std_print_flag || err_print_flag )
+		if( print_level == expression_list_level-- && ( std_print_flag || err_print_flag ) )
 		{
 			if( PrintVariables != 0 )
 			{ // resolve
 				PrintVariables = 0;
 				++Global.valid;
-				System.out.printf( "Valid line profiled: \"%s\"\n", context.getText() );
+				System.out.printf( "Valid line profiled: \"%s\"\n", context.getParent().getText() );
 			}
 			else
 			{
 				++Global.invalid;
-				System.out.printf( "Invalid line profiled: \"%s\"\n", context.getText() );
+				System.out.printf( "Invalid line profiled: \"%s\"\n", context.getParent().getText() );
 			}
 
 			std_print_flag = false;
@@ -154,7 +179,7 @@ class CPP14Listener extends CPP14BaseListener
 	{
 		if( ( --ShiftBlockCount ) == 0 ) // decrement then check against zero
 		{
-			if( COUT_flag || CERR_flag )
+			if( print_level == expression_list_level && (COUT_flag || CERR_flag ) )
 			{
 				if( PrintVariables != 0 )
 				{ // resolve
