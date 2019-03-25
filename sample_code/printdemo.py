@@ -7,6 +7,12 @@ This program demonstrates all of the print statements I know of.
 If you know of any other methods of printing, please add them.
 """
 
+class example:
+	var = "pass class line."
+
+def func():
+	return "pass returned line."
+
 def main():
 	var = "variable"
 	str = [ "pass line 1.",
@@ -15,6 +21,10 @@ def main():
 			"pass line 4.\n",
 			"pass stderr line 5.",
 			"pass stderr line 6.\n" ]
+
+	print( example.var )
+	print( func() )
+	print( 1234 )
 
 	# standard output stream
 	print( str[ 0 ] )

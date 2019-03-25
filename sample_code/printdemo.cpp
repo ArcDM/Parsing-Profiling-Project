@@ -9,8 +9,20 @@ using namespace std;
   *	If you know of any other methods of printing, please add them.
   */
 
+#define macro_string "pass macro line."
+
+char* func()
+{
+	return "pass returned line.";
+}
+
 int main()
 {
+	struct struct_example
+	{
+		char var[ 18 ] = "pass struct line.";
+	} stru;
+
 	int index;
 
 	char var[] = "variable",
@@ -40,6 +52,11 @@ int main()
 			"pass line 23.\n",
 			"pass line 24.\n",
 			"pass line 25." };
+
+	cout << func() << endl;
+	cout << stru.var << endl;
+	cout << macro_string << endl;
+	cout << 1234 << endl;
 
 	// standard output stream
 	cout << str[ 0 ] << endl;
