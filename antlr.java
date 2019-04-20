@@ -84,13 +84,13 @@ public class antlr
 
 					if( !return_boolean )
 					{
-						System.err.printf( "File \"%s\" failed validation\n", args[ argument_index ] );
+						//System.err.printf( "File \"%s\" failed validation\n", args[ argument_index ] );
 						System.exit( STATUS_FAIL );
 					}
                 }
         }
 
-		System.err.println( "All file validated" );
+		//System.err.println( "All file validated" );
 		System.exit( STATUS_PASS );
 	}
 
