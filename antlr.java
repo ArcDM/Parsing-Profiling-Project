@@ -62,18 +62,7 @@ public class antlr
 							break;
 
 						case "py":
-							/*	python is currently inoperable
-							if( PY_rules == null )
-							{
-								PY_rules = new PYRules( import_rules );
-							}
-							else
-							{
-								PY_rules.reset_rules();
-							}
-
-							return_boolean = Python3Walker.walker( ANTLRfile );
-							*/
+							//return_boolean = Python3Walker.walker( ANTLRfile );
 							return_boolean = true;
 							break;
 

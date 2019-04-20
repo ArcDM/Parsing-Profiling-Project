@@ -5,7 +5,6 @@ SHELL = /bin/bash
 grammar_DIRECTORY	:=	grammars
 CPP		:=	CPP14
 GO		:=	Golang
-PYTHON	:=	Python3
 JAVA	:=	${grammar_DIRECTORY}/JavaLexer.g4 ${grammar_DIRECTORY}/JavaParser.g4
 # The Java grammar has two files, needing special rules for nearly every step
 
@@ -60,9 +59,6 @@ grammar_go	: ${grammar_DIRECTORY}/${GO}.g4
 
 grammar_java: ${JAVA}
 	${ANTLR} -package ${grammar_DIRECTORY} ${JAVA}
-
-grammar_py	: ${grammar_DIRECTORY}/${PYTHON}.g4
-	${ANTLR} -package ${grammar_DIRECTORY} ${grammar_DIRECTORY}/${PYTHON}.g4
 
 clean_lite	:
 	-rm -f ${grammar_DIRECTORY}/*{Lexer,Parser,Listener}.java *.class
