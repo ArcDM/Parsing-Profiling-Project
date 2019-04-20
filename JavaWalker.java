@@ -1,21 +1,19 @@
 // JavaWalker.java
 
-//package grammars;
-
 import grammars.*;
 import org.antlr.v4.runtime.*;
 import org.antlr.v4.runtime.tree.*;
 
-class Global
-{
-	public static int valid = 0, invalid = 0;
-}
 
 public class JavaWalker
 {
-	public static boolean walker( String input_file ) throws Exception
+	static JAVARules JAVA_rules = null;
+
+	public static boolean walker( ANTLRFileStream input_file ) throws Exception
 	{
-		JavaLexer lexer = new JavaLexer( new ANTLRFileStream( input_file ) );
+		JAVA_rules = antlr.initialize_rules( JAVA_rules, JAVARules.class );
+
+		JavaLexer lexer = new JavaLexer( input_file );
 		CommonTokenStream tokens = new CommonTokenStream( lexer );
 		JavaParser parser = new JavaParser( tokens );
 
@@ -25,9 +23,9 @@ public class JavaWalker
 
 		walker.walk( listener, compilation_context );
 
-		System.out.printf( "Valid count = %d\nInvalid count = %d\n", Global.valid, Global.invalid );
+		//JAVA_rules.print_rules();
 
-		return true;
+		return JAVA_rules.validate();
 	}
 }
 
@@ -89,7 +87,7 @@ class JavaListener extends JavaParserBaseListener
 			case "printf":
 				std_print_flag = OUT_flag;
 				err_print_flag = ERR_flag;
-				print_level = ( OUT_flag || ERR_flag )? arguments_list_level + 1 : 0;
+				print_level = ( OUT_flag || ERR_flag )? expression_list_level + 1 : 0;
 				OUT_flag = false;
 				ERR_flag = false;
 				break;
@@ -101,18 +99,14 @@ class JavaListener extends JavaParserBaseListener
 	{
 		if( ( std_print_flag || err_print_flag ) && expression_list_level == print_level - 1 )
 		{
-			if( PrintVariables != 0 )
-			{ // resolve
-				PrintVariables = 0;
-				++Global.valid;
-				System.out.printf( "Valid line profiled: \"%s\"\n", context.getText() );
-			}
-			else
+			JavaWalker.JAVA_rules.increment_rule( "output" );
+
+			if( PrintVariables == 0 )
 			{
-				++Global.invalid;
-				System.out.printf( "Invalid line profiled: \"%s\"\n", context.getText() );
+				JavaWalker.JAVA_rules.increment_rule( "print_w/o_variable" );
 			}
 
+			PrintVariables = 0;
 			std_print_flag = false;
 			err_print_flag = false;
 		}
@@ -139,5 +133,25 @@ class JavaListener extends JavaParserBaseListener
 	public void exitExpressionList(JavaParser.ExpressionListContext context )
 	{
 		expression_list_level -= 1;
+	}
+}
+
+class JAVARules extends Rules
+{
+	public JAVARules( Rules InputRules )
+	{
+		super( InputRules );
+	}
+
+	@Override
+	String customize_rule( String rule_name )
+	{
+		switch( rule_name )
+		{
+			//case "sample_case":
+			//	break;
+		}
+
+		return rule_name;
 	}
 }

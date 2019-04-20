@@ -4,17 +4,15 @@ import grammars.*;
 import org.antlr.v4.runtime.*;
 import org.antlr.v4.runtime.tree.*;
 
-class Global
-{
-	public static int valid = 0, invalid = 0;
-}
-
-
 public class CPP14Walker
 {
-	public static boolean walker( String input_file ) throws Exception
+	static CPPRules CPP_rules = null;
+
+	public static boolean walker( ANTLRFileStream input_file ) throws Exception
 	{
-		CPP14Lexer lexer = new CPP14Lexer( new ANTLRFileStream( input_file ) );
+		CPP_rules = antlr.initialize_rules( CPP_rules, CPPRules.class );
+
+		CPP14Lexer lexer = new CPP14Lexer( input_file );
 		CommonTokenStream tokens = new CommonTokenStream( lexer );
 		CPP14Parser parser = new CPP14Parser( tokens );
 
@@ -24,9 +22,9 @@ public class CPP14Walker
 
 		walker.walk( listener, file_context );
 
-		System.out.printf( "Valid count = %d\nInvalid count = %d\n", Global.valid, Global.invalid );
+		//CPP_rules.print_rules();
 
-		return true;
+		return CPP_rules.validate();
 	}
 }
 
@@ -151,18 +149,14 @@ class CPP14Listener extends CPP14BaseListener
 	{
 		if( print_level == expression_list_level-- && ( std_print_flag || err_print_flag ) )
 		{
-			if( PrintVariables != 0 )
-			{ // resolve
-				PrintVariables = 0;
-				++Global.valid;
-				System.out.printf( "Valid line profiled: \"%s\"\n", context.getParent().getText() );
-			}
-			else
+			CPP14Walker.CPP_rules.increment_rule( "output" );
+
+			if( PrintVariables == 0 )
 			{
-				++Global.invalid;
-				System.out.printf( "Invalid line profiled: \"%s\"\n", context.getParent().getText() );
+				CPP14Walker.CPP_rules.increment_rule( "print_w/o_variable" );
 			}
 
+			PrintVariables = 0;
 			std_print_flag = false;
 			err_print_flag = false;
 		}
@@ -181,21 +175,37 @@ class CPP14Listener extends CPP14BaseListener
 		{
 			if( print_level == expression_list_level && (COUT_flag || CERR_flag ) )
 			{
-				if( PrintVariables != 0 )
-				{ // resolve
-					PrintVariables = 0;
-					++Global.valid;
-					System.out.printf( "Valid line profiled: \"%s\"\n", context.getText() );
-				}
-				else
+				CPP14Walker.CPP_rules.increment_rule( "output" );
+
+				if( PrintVariables == 0 )
 				{
-					++Global.invalid;
-					System.out.printf( "Invalid line profiled: \"%s\"\n", context.getText() );
+					CPP14Walker.CPP_rules.increment_rule( "print_w/o_variable" );
 				}
 
+				PrintVariables = 0;
 				COUT_flag = false;
 				CERR_flag = false;
 			}
 		}
+	}
+}
+
+class CPPRules extends Rules
+{
+	public CPPRules( Rules InputRules )
+	{
+		super( InputRules );
+	}
+
+	@Override
+	String customize_rule( String rule_name )
+	{
+		switch( rule_name )
+		{
+			//case "sample_case":
+			//	break;
+		}
+
+		return rule_name;
 	}
 }

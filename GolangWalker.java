@@ -4,17 +4,15 @@ import grammars.*;
 import org.antlr.v4.runtime.*;
 import org.antlr.v4.runtime.tree.*;
 
-class Global
-{
-	public static int valid = 0, invalid = 0;
-}
-
 public class GolangWalker
 {
-	public static boolean walker( String input_file ) throws Exception
+	static GORules GO_rules = null;
+
+	public static boolean walker( ANTLRFileStream input_file ) throws Exception
 	{
-		// original code
-		GolangLexer lexer = new GolangLexer( new ANTLRFileStream( input_file ) );
+		GO_rules = antlr.initialize_rules( GO_rules, GORules.class );
+
+		GolangLexer lexer = new GolangLexer( input_file );
 		CommonTokenStream tokens = new CommonTokenStream( lexer );
 		GolangParser parser = new GolangParser( tokens );
 
@@ -24,8 +22,9 @@ public class GolangWalker
 
 		walker.walk( listener, file_context );
 
-		System.out.printf( "Valid count = %d\nInvalid count = %d\n", Global.valid, Global.invalid );
-		return true;
+		//GO_rules.print_rules();
+
+		return GO_rules.validate();
 	}
 }
 
@@ -148,20 +147,36 @@ class GolangListener extends GolangBaseListener
 	{
 		if( print_level == arguments_list_level-- && ( std_print_flag || err_print_flag ) )
 		{
-			if( PrintVariables != 0 )
-			{ // resolve
-				PrintVariables = 0;
-				++Global.valid;
-				System.out.printf( "Valid line profiled: \"%s\"\n", context.getParent().getText() );
-			}
-			else
+			GolangWalker.GO_rules.increment_rule( "output" );
+
+			if( PrintVariables == 0 )
 			{
-				++Global.invalid;
-				System.out.printf( "Invalid line profiled: \"%s\"\n", context.getParent().getText() );
+				GolangWalker.GO_rules.increment_rule( "print_w/o_variable" );
 			}
 
+			PrintVariables = 0;
 			std_print_flag = false;
 			err_print_flag = false;
 		}
+	}
+}
+
+class GORules extends Rules
+{
+	public GORules( Rules InputRules )
+	{
+		super( InputRules );
+	}
+
+	@Override
+	String customize_rule( String rule_name )
+	{
+		switch( rule_name )
+		{
+			//case "sample_case":
+			//	break;
+		}
+
+		return rule_name;
 	}
 }
