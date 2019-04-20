@@ -1,0 +1,12 @@
+Rules are provided as the first argument to antlr.java
+The format for each rule is a string followed by an integer for each line
+
+Example:
+print_w/o_variable 0
+output -1
+= -1
+
+Lines that don't match this format are ignored.
+
+###NOT IMPLEMENTED YET###
+Symbols, key words and function calls can be found this way
