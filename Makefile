@@ -16,7 +16,8 @@ ANTLR	:=	java -jar /usr/local/lib/antlr-4.7.2-complete.jar
 default	:	antlr.class
 
 # compile main file (a clean compilation could take a minute)
-antlr.class	:	antlr.java ${CPP}Walker.class ${GO}Walker.class JavaWalker.class ${PYTHON}Walker.class
+# the grammars do not implicitly build, run 'make grammar_all' first
+antlr.class	:	antlr.java Rules.class ${CPP}Walker.class ${GO}Walker.class JavaWalker.class
 	javac antlr.java
 
 # run the main file with arguments
@@ -24,13 +25,17 @@ antlr.class	:	antlr.java ${CPP}Walker.class ${GO}Walker.class JavaWalker.class $
 run	:	antlr.class
 	-java antlr $(filter-out $@,$(MAKECMDGOALS))
 
-
-JavaWalker.class	:	JavaWalker.java ${grammar_DIRECTORY}/JavaLexer.class ${grammar_DIRECTORY}/JavaParser.class ${grammar_DIRECTORY}/JavaParserBaseListener.class ${grammar_DIRECTORY}/JavaParserListener.class
+JavaWalker.class	:	JavaWalker.java Rules.class ${grammar_DIRECTORY}/JavaLexer.class ${grammar_DIRECTORY}/JavaParser.class ${grammar_DIRECTORY}/JavaParserBaseListener.class ${grammar_DIRECTORY}/JavaParserListener.class
 	javac $<
 
 # implicit compilation rules for Walker.classes
-%Walker.class	:	%Walker.java ${grammar_DIRECTORY}/%Lexer.class ${grammar_DIRECTORY}/%Parser.class ${grammar_DIRECTORY}/%BaseListener.class ${grammar_DIRECTORY}/%Listener.class
+%Walker.class	:	%Walker.java Rules.class ${grammar_DIRECTORY}/%Lexer.class ${grammar_DIRECTORY}/%Parser.class ${grammar_DIRECTORY}/%BaseListener.class ${grammar_DIRECTORY}/%Listener.class
 	javac $<
+
+Rules.class	: Rules.java
+	javac $<
+
+grammar_all	:	grammar_${CPP} grammar_${GO} grammar_java
 
 # implicit compilation rules for ${grammar_DIRECTORY}
 ${grammar_DIRECTORY}/%.class	:	${grammar_DIRECTORY}/%.java
@@ -41,6 +46,9 @@ ${grammar_DIRECTORY}/JavaLexer.java ${grammar_DIRECTORY}/JavaParser.java ${gramm
 
 # implicit grammar generation only rules
 ${grammar_DIRECTORY}/%Lexer.java ${grammar_DIRECTORY}/%Parser.java ${grammar_DIRECTORY}/%BaseListener.java ${grammar_DIRECTORY}/%Listener.java	: ${grammar_DIRECTORY}/%.g4
+	-${ANTLR} -package ${grammar_DIRECTORY} $<
+
+grammar_%	: ${grammar_DIRECTORY}/%.g4
 	-${ANTLR} -package ${grammar_DIRECTORY} $<
 
 # explicit grammar generation only rules
