@@ -1,5 +1,6 @@
 // CPP14Walker.java
 
+import java.io.File;
 import grammars.*;
 import org.antlr.v4.runtime.*;
 import org.antlr.v4.runtime.tree.*;
@@ -22,7 +23,7 @@ public class CPP14Walker
 
 		walker.walk( listener, file_context );
 
-		//CPP_rules.print_rules();
+		CPP_rules.print_rules();
 
 		return CPP_rules.validate();
 	}
@@ -149,11 +150,13 @@ class CPP14Listener extends CPP14BaseListener
 	{
 		if( print_level == expression_list_level-- && ( std_print_flag || err_print_flag ) )
 		{
-			CPP14Walker.CPP_rules.increment_rule( "output" );
-
 			if( PrintVariables == 0 )
 			{
 				CPP14Walker.CPP_rules.increment_rule( "print_w/o_variable" );
+			}
+			else
+			{
+				CPP14Walker.CPP_rules.increment_rule( "output" );
 			}
 
 			PrintVariables = 0;
@@ -175,11 +178,13 @@ class CPP14Listener extends CPP14BaseListener
 		{
 			if( print_level == expression_list_level && (COUT_flag || CERR_flag ) )
 			{
-				CPP14Walker.CPP_rules.increment_rule( "output" );
-
 				if( PrintVariables == 0 )
 				{
 					CPP14Walker.CPP_rules.increment_rule( "print_w/o_variable" );
+				}
+				else
+				{
+					CPP14Walker.CPP_rules.increment_rule( "output" );
 				}
 
 				PrintVariables = 0;
@@ -192,7 +197,7 @@ class CPP14Listener extends CPP14BaseListener
 
 class CPPRules extends Rules
 {
-	public CPPRules( Rules InputRules )
+	public CPPRules( File InputRules )
 	{
 		super( InputRules );
 	}

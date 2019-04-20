@@ -1,5 +1,6 @@
 // CPP14Walker.java
 
+import java.io.File;
 import grammars.*;
 import org.antlr.v4.runtime.*;
 import org.antlr.v4.runtime.tree.*;
@@ -147,11 +148,14 @@ class GolangListener extends GolangBaseListener
 	{
 		if( print_level == arguments_list_level-- && ( std_print_flag || err_print_flag ) )
 		{
-			GolangWalker.GO_rules.increment_rule( "output" );
 
 			if( PrintVariables == 0 )
 			{
 				GolangWalker.GO_rules.increment_rule( "print_w/o_variable" );
+			}
+			else
+			{
+				GolangWalker.GO_rules.increment_rule( "output" );
 			}
 
 			PrintVariables = 0;
@@ -163,7 +167,7 @@ class GolangListener extends GolangBaseListener
 
 class GORules extends Rules
 {
-	public GORules( Rules InputRules )
+	public GORules( File InputRules )
 	{
 		super( InputRules );
 	}

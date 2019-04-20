@@ -1,5 +1,6 @@
 // JavaWalker.java
 
+import java.io.File;
 import grammars.*;
 import org.antlr.v4.runtime.*;
 import org.antlr.v4.runtime.tree.*;
@@ -99,11 +100,13 @@ class JavaListener extends JavaParserBaseListener
 	{
 		if( ( std_print_flag || err_print_flag ) && expression_list_level == print_level - 1 )
 		{
-			JavaWalker.JAVA_rules.increment_rule( "output" );
-
 			if( PrintVariables == 0 )
 			{
 				JavaWalker.JAVA_rules.increment_rule( "print_w/o_variable" );
+			}
+			else
+			{
+				JavaWalker.JAVA_rules.increment_rule( "output" );
 			}
 
 			PrintVariables = 0;
@@ -138,7 +141,7 @@ class JavaListener extends JavaParserBaseListener
 
 class JAVARules extends Rules
 {
-	public JAVARules( Rules InputRules )
+	public JAVARules( File InputRules )
 	{
 		super( InputRules );
 	}

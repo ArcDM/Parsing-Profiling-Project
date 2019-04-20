@@ -57,7 +57,7 @@ class Rules // super class
 	{
 		Scanner scanner;
 		String line, str_rule, str_modifier;
-		int rule_modifier, index;
+		int index;
 
 		try
 		{
@@ -77,8 +77,18 @@ class Rules // super class
 
 					try
 					{
-						rule_modifier = Integer.valueOf( str_modifier );
-						rules_list.put( str_rule, new Rule( rule_modifier ) );
+						final Rule new_rule = new Rule( Integer.valueOf( str_modifier ) );
+						String[] split_rules = str_rule.split( "#" );
+
+						for( String rule_str : split_rules )
+						{
+							rule_str = customize_rule( rule_str );
+
+							if( rule_str != null )
+							{
+								rules_list.put( rule_str, new_rule );
+							}
+						}
 					}
 					catch( Exception e )
 					{
@@ -92,7 +102,7 @@ class Rules // super class
 			System.exit( -4 ); // returns 252
 		}
 
-		//rules_list.keySet().stream().forEach( key -> customize_rule( key ) );
+		rules_list.keySet().stream().forEach( key -> customize_rule( key ) );
 	}
 
 	public Rules( Rules InputRules )
@@ -101,7 +111,12 @@ class Rules // super class
 
 		for( Map.Entry<String, Rule> entry : InputRules.rules_list.entrySet() )
 		{
-			rules_list.put( customize_rule( entry.getKey() ), new Rule( entry.getValue() ) );
+			String rule_str = customize_rule( entry.getKey() );
+
+			if( rule_str != null )
+			{
+				rules_list.put( rule_str, new Rule( entry.getValue() ) );
+			}
 		}
 	}
 
@@ -127,16 +142,25 @@ class Rules // super class
 		{
 			referenced_rule.increment( amount );
 		}
+
+		// chaining rules
+		switch( rule_name )
+		{
+			case "print_w/o_variable":
+				Rule output_rule = rules_list.get( "output" );
+
+				if( output_rule != null && output_rule != referenced_rule )
+				{
+					output_rule.increment( amount );
+				}
+
+				break;
+		}
 	}
 
 	public void increment_rule( String rule_name )
 	{
-		Rule referenced_rule = rules_list.get( rule_name );
-
-		if( referenced_rule != null )
-		{
-			referenced_rule.increment();
-		}
+		increment_rule( rule_name, 1 );
 	}
 
 	// debugging function

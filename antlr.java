@@ -8,7 +8,7 @@ public class antlr
 {
 	final static int STATUS_PASS = 0,
 					STATUS_FAIL = 1;
-	static Rules import_rules = null;
+	static File import_rules = null;
 
 	private static String getExtension( String inputString )
 	{
@@ -30,7 +30,7 @@ public class antlr
 				System.exit( -1 ); // returns 255
 
             default:
-				import_rules = new Rules( new File( args[ argument_index ] ) );
+				import_rules = new File( args[ argument_index ] );
 
                 for( ++argument_index ; argument_index < args.length; ++argument_index )
                 {
@@ -89,7 +89,7 @@ public class antlr
 		{
 			try
 			{ // the work around to generic_type constructor with arguments
-				ruleSet = ( Rule_Type ) baseClass.getConstructor( Rules.class ).newInstance( import_rules );
+				ruleSet = ( Rule_Type ) baseClass.getConstructor( File.class ).newInstance( import_rules );
 			}
 			catch( Exception e)
 			{
