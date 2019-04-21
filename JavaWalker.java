@@ -5,7 +5,6 @@ import grammars.*;
 import org.antlr.v4.runtime.*;
 import org.antlr.v4.runtime.tree.*;
 
-
 public class JavaWalker
 {
 	static JAVARules JAVA_rules = null;
@@ -24,7 +23,7 @@ public class JavaWalker
 
 		walker.walk( listener, compilation_context );
 
-		//JAVA_rules.print_rules();
+		JAVA_rules.print_rules();
 
 		return JAVA_rules.validate();
 	}
@@ -102,7 +101,7 @@ class JavaListener extends JavaParserBaseListener
 		{
 			if( PrintVariables == 0 )
 			{
-				JavaWalker.JAVA_rules.increment_rule( "print_w/o_variable" );
+				JavaWalker.JAVA_rules.increment_rule( "-print-w/o-variable-" );
 			}
 			else
 			{
@@ -136,6 +135,13 @@ class JavaListener extends JavaParserBaseListener
 	public void exitExpressionList(JavaParser.ExpressionListContext context )
 	{
 		expression_list_level -= 1;
+	}
+
+	// a simple way to test each parsed elemental node
+	@Override
+	public void visitTerminal( TerminalNode node )
+	{
+		JavaWalker.JAVA_rules.increment_rule( node.getText() );
 	}
 }
 

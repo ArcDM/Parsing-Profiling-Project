@@ -23,7 +23,7 @@ public class CPP14Walker
 
 		walker.walk( listener, file_context );
 
-		//CPP_rules.print_rules();
+		CPP_rules.print_rules();
 
 		return CPP_rules.validate();
 	}
@@ -152,7 +152,7 @@ class CPP14Listener extends CPP14BaseListener
 		{
 			if( PrintVariables == 0 )
 			{
-				CPP14Walker.CPP_rules.increment_rule( "print_w/o_variable" );
+				CPP14Walker.CPP_rules.increment_rule( "-print-w/o-variable-" );
 			}
 			else
 			{
@@ -180,7 +180,7 @@ class CPP14Listener extends CPP14BaseListener
 			{
 				if( PrintVariables == 0 )
 				{
-					CPP14Walker.CPP_rules.increment_rule( "print_w/o_variable" );
+					CPP14Walker.CPP_rules.increment_rule( "-print-w/o-variable-" );
 				}
 				else
 				{
@@ -192,6 +192,13 @@ class CPP14Listener extends CPP14BaseListener
 				CERR_flag = false;
 			}
 		}
+	}
+
+	// a simple way to test each parsed elemental node
+	@Override
+	public void visitTerminal( TerminalNode node )
+	{
+		CPP14Walker.CPP_rules.increment_rule( node.getText() );
 	}
 }
 

@@ -23,7 +23,7 @@ public class GolangWalker
 
 		walker.walk( listener, file_context );
 
-		//GO_rules.print_rules();
+		GO_rules.print_rules();
 
 		return GO_rules.validate();
 	}
@@ -151,7 +151,7 @@ class GolangListener extends GolangBaseListener
 
 			if( PrintVariables == 0 )
 			{
-				GolangWalker.GO_rules.increment_rule( "print_w/o_variable" );
+				GolangWalker.GO_rules.increment_rule( "-print-w/o-variable-" );
 			}
 			else
 			{
@@ -162,6 +162,13 @@ class GolangListener extends GolangBaseListener
 			std_print_flag = false;
 			err_print_flag = false;
 		}
+	}
+
+	// a simple way to test each parsed elemental node
+	@Override
+	public void visitTerminal( TerminalNode node )
+	{
+		GolangWalker.GO_rules.increment_rule( node.getText() );
 	}
 }
 

@@ -146,14 +146,21 @@ class Rules // super class
 		// chaining rules
 		switch( rule_name )
 		{
-			case "print_w/o_variable":
-				Rule output_rule = rules_list.get( "output" );
-
-				if( output_rule != null && output_rule != referenced_rule )
-				{
-					output_rule.increment( amount );
-				}
-
+			case "-print-w/o-variable-":
+				increment_chain_rule( referenced_rule,"-output-", amount );
+				break;
+			case "if":
+			case "switch":
+				increment_chain_rule( referenced_rule,"-selection-", amount );
+				break;
+			case "for":
+			case "while":
+				increment_chain_rule( referenced_rule,"-iteration-", amount );
+				break;
+			case "goto":
+			case "break":
+			case "continue":
+				increment_chain_rule( referenced_rule,"-jump-", amount );
 				break;
 		}
 	}
@@ -161,6 +168,16 @@ class Rules // super class
 	public void increment_rule( String rule_name )
 	{
 		increment_rule( rule_name, 1 );
+	}
+
+	private void increment_chain_rule( Rule referenced_rule, String chain_rule, int amount )
+	{
+		Rule output_rule = rules_list.get( chain_rule );
+
+		if( output_rule != null && output_rule != referenced_rule )
+		{
+			output_rule.increment( amount );
+		}
 	}
 
 	// debugging function
