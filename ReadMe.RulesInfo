@@ -1,29 +1,29 @@
-Rules are provided as the first argument to antlr.java
-The format for each rule is a string followed by an integer for each line
-0 and above: upper limit for the rule
--1 and below: negative lower limit for the rule
+Rules are provided as the first argument to antlr.java.
+The format for each rule is a string followed by an integer for each line.
+0 and above: upper limit for the rule.
+-1 and below: negative lower limit for the rule.
 
 Example:
-print_w/o_variable 0
-output -2
-
-print_w/o_variable must be found no more than 0 times to be valid
-output must be found no less than 2 times to be valid
-
-print_w/o_variable and output are key words for the parser and is utilized for each language implemented for every printing method.
-
-Lines that don't match this format are ignored.
-
-# is used as an OR operator for the rules' string
-Strings that are delimited by # will be count for the same rule
-
-Example:
-for#while#until -1
-
-comments cannot be found with this parsing program
-
-###NOT IMPLEMENTED YET###
-Symbols, key words and most function calls will soon be parsable
+-print-w/o-variable- 0
+-output- -1
+-iteration- 2
 if -2
-for#while#until -1
-= -1
+for -1
+goto 1
+= -5
++= -1
+
+goto must be found no more than 1 time to be valid.
+if must be found no less than 2 times to be valid.
+
+Key words for this parser like -print-w/o-variable- and -iteration- are utilized for each language implemented. These key words, denoted by the dashes "-" in them can mark basic programming tools such as selection statements or operators.
+
+# is used as an OR operator for the rules' string.
+Strings that are delimited by # will be count for the same rule.
+Do not use this to duplicate rules for it will be ever written.
+
+Example:
+for#while -1
+
+Lines that don't match there formatting rules are ignored.
+comments cannot be found with this parsing program.

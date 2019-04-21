@@ -152,15 +152,71 @@ class Rules // super class
 			case "if":
 			case "switch":
 				increment_chain_rule( referenced_rule,"-selection-", amount );
+				increment_chain_rule( referenced_rule,"-control-statement-", amount );
 				break;
 			case "for":
 			case "while":
 				increment_chain_rule( referenced_rule,"-iteration-", amount );
+				increment_chain_rule( referenced_rule,"-control-statement-", amount );
 				break;
 			case "goto":
+			case "return":
 			case "break":
 			case "continue":
 				increment_chain_rule( referenced_rule,"-jump-", amount );
+				increment_chain_rule( referenced_rule,"-control-statement-", amount );
+				break;
+			case "+":
+			case "-":
+			case "*":
+			case "/":
+			case "%":
+			case "++":
+			case "--":
+				increment_chain_rule( referenced_rule,"-arithmetic-operator-", amount );
+				increment_chain_rule( referenced_rule,"-operator-", amount );
+				break;
+			case "==":
+			case "!=":
+			case ">":
+			case "<":
+			case ">=":
+			case "<=":
+				increment_chain_rule( referenced_rule,"-relational-operator-", amount );
+				increment_chain_rule( referenced_rule,"-operator-", amount );
+				break;
+			case "!":
+			case "&&":
+			case "||":
+				increment_chain_rule( referenced_rule,"-logical-operator-", amount );
+				increment_chain_rule( referenced_rule,"-operator-", amount );
+				break;
+			case "&":
+			case "|":
+			case "^":
+			case "&^":
+			case "<<":
+			case ">>":
+			case ">>>":
+				increment_chain_rule( referenced_rule,"-bitwise-operator-", amount );
+				increment_chain_rule( referenced_rule,"-operator-", amount );
+				break;
+			case "=":
+			case ":=":
+			case "+=":
+			case "-=":
+			case "*=":
+			case "/=":
+			case "%=":
+			case "&=":
+			case "|=":
+			case "^=":
+			case "<<=":
+			case ">>=":
+			case ">>>=":
+				increment_chain_rule( referenced_rule,"-assignment-operator-", amount );
+			case "?":
+				increment_chain_rule( referenced_rule,"-operator-", amount );
 				break;
 		}
 	}

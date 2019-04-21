@@ -23,7 +23,7 @@ public class JavaWalker
 
 		walker.walk( listener, compilation_context );
 
-		JAVA_rules.print_rules();
+		//JAVA_rules.print_rules();
 
 		return JAVA_rules.validate();
 	}
@@ -65,13 +65,34 @@ class JavaListener extends JavaParserBaseListener
 	@Override
 	public void enterExpression( JavaParser.ExpressionContext context )
 	{
+		int 	child_count = context.getChildCount(),
+				child_iteration = 1;
+		String	node_text = "",
+				child_text;
+
+		while( child_iteration < child_count )
+		{
+			child_text = context.getChild( child_iteration ).getText();
+
+			if( "<".equals( child_text ) || ">".equals( child_text ) )
+			{
+				node_text += child_text;
+			}
+
+			++child_iteration;
+		}
+
+		if( node_text != "" )
+		{
+			JavaWalker.JAVA_rules.increment_rule( node_text );
+		}
 	}
 
 	@Override
 	public void exitExpression( JavaParser.ExpressionContext context )
 	{
-		OUT_flag = ( SYSTEM_flag && context.getChildCount() == 3 && context.getChild( 2 ).getText().equals( "out" ) );
-		ERR_flag = ( SYSTEM_flag && context.getChildCount() == 3 && context.getChild( 2 ).getText().equals( "err" ) );
+		OUT_flag = ( SYSTEM_flag && context.getChildCount() == 3 && "out".equals( context.getChild( 2 ).getText() ) );
+		ERR_flag = ( SYSTEM_flag && context.getChildCount() == 3 && "err".equals( context.getChild( 2 ).getText() ) );
 		SYSTEM_flag = ( SYSTEM_flag && context.getChildCount() > 1 )? false : SYSTEM_flag;
 	}
 
@@ -141,7 +162,12 @@ class JavaListener extends JavaParserBaseListener
 	@Override
 	public void visitTerminal( TerminalNode node )
 	{
-		JavaWalker.JAVA_rules.increment_rule( node.getText() );
+		String node_text = node.getText();
+
+		if( !( "<".equals( node_text ) || ">".equals( node_text ) ) )
+		{
+			JavaWalker.JAVA_rules.increment_rule( node_text );
+		}
 	}
 }
 

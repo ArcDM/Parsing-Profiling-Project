@@ -7,6 +7,6 @@ The grammar parsing modules only need to be compiled once, unless the .g4 files 
 The sample code is only for testing the project.
 If new sample code is added, make sure that it compile and run as expected.
 
-The project currently only checks if the source code has printing statement and string only printing statement.
+The project currently checks the source code for common programming constructs such as iteration and output.
 
 The make file should not be relied on as the rules are sometimes ignored of the grammars arn't generated.

@@ -23,7 +23,7 @@ public class GolangWalker
 
 		walker.walk( listener, file_context );
 
-		GO_rules.print_rules();
+		//GO_rules.print_rules();
 
 		return GO_rules.validate();
 	}
@@ -164,11 +164,25 @@ class GolangListener extends GolangBaseListener
 		}
 	}
 
+	@Override
+	public void enterAssign_op( GolangParser.Assign_opContext context )
+	{
+		GolangWalker.GO_rules.increment_rule( context.getText() );
+	}
+
+	@Override
+	public void exitAssign_op( GolangParser.Assign_opContext context )
+	{
+	}
+
 	// a simple way to test each parsed elemental node
 	@Override
 	public void visitTerminal( TerminalNode node )
 	{
-		GolangWalker.GO_rules.increment_rule( node.getText() );
+		if( !( node.getParent() instanceof GolangParser.Assign_opContext ) )
+		{
+			GolangWalker.GO_rules.increment_rule( node.getText() );
+		}
 	}
 }
 

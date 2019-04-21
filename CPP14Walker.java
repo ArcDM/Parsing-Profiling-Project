@@ -23,7 +23,7 @@ public class CPP14Walker
 
 		walker.walk( listener, file_context );
 
-		CPP_rules.print_rules();
+		//CPP_rules.print_rules();
 
 		return CPP_rules.validate();
 	}
