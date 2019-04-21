@@ -25,5 +25,7 @@ Do not use this to duplicate rules for it will be ever written.
 Example:
 for#while -1
 
+Check sample_code/big_list.rules for a set of tested rules
+
 Lines that don't match there formatting rules are ignored.
 comments cannot be found with this parsing program.

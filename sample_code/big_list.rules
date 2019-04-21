@@ -1,4 +1,3 @@
-output -1
 if -2
 else -1
 while#for -1
@@ -39,7 +38,9 @@ return -1
 ^= -1
 >>= -1
 <<= -1
-case#default -3
+case -1
+default -1
+-output- -1
 -print-w/o-variable- 0
 -selection- -2
 -iteration- -1
