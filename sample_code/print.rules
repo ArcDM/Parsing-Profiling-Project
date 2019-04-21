@@ -1,1 +1,2 @@
 output -10
+-print-w/o-variable- -10
