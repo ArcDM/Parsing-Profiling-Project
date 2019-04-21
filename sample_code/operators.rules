@@ -1,0 +1,43 @@
+-arithmetic-operator- -7
++ -1
+- -1
+* -1
+/ -1
+% -1
+++ -1
+-- -1
+
+-relational-operator- -6
+== -1
+!= -1
+> -1
+< -1
+>= -1
+<= -1
+
+-logical-operator- -3
+! -1
+&& -1
+|| -1
+
+-bitwise-operator- -5
+& -1
+| -1
+^ -1
+>> -1
+<< -1
+
+-assignment-operator- -11
+= -5
++= -1
+-= -1
+*= -1
+/= -1
+%= -1
+&= -1
+|= -1
+^= -1
+>>= -1
+<<= -1
+
+-operator- -32
